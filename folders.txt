@@ -1,0 +1,7 @@
+database
+static
+css
+icons
+images
+js
+templates
