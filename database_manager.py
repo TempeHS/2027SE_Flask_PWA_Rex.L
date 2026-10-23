@@ -7,3 +7,13 @@ def listExtension():
     data = cur.execute("SELECT * FROM extension").fetchall()
     con.close()
     return data
+
+
+def insertContact(email, name):
+    con = sql.connect("database/data_source.db")
+    cur = con.cursor()
+
+    cur.execute("INSERT INTO contact list (email, name) VALUES (?, ?)", (email, name))
+
+    con.commit()
+    con.close()
