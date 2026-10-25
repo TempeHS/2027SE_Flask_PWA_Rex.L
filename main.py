@@ -2,6 +2,7 @@ from flask import Flask
 from flask import render_template
 from flask import request
 import database_manager as dbHandler
+import sqlite3
 
 app = Flask(__name__)
 
@@ -11,6 +12,35 @@ app = Flask(__name__)
 def index():
     data = dbHandler.listExtension()
     return render_template("/index.html", content=data)
+
+
+@app.route('/add.html', methods=['POST', 'GET'])
+def add():
+    """
+    Handle the contact form page.
+
+    GET request: Display empty form
+    POST request: Process form submission with error handling
+    """
+    if request.method == 'POST':
+        # Extract form data
+        email = request.form['email']
+        name = request.form['name']
+
+        # Try to insert into database
+        try:
+            dbHandler.insertContact(email, name)
+            # Success! Show confirmation
+            return render_template('/add.html', is_done=True)
+
+        except sqlite3.IntegrityError:
+            # Duplicate email - show error message
+            error_message = "This email address is already subscribed. Please use a different email."
+            return render_template('/add.html', error=error_message, email=email, name=name)
+
+    else:
+        # GET request - display empty form
+        return render_template('/add.html')
 
 
 if __name__ == "__main__":
